@@ -1,36 +1,24 @@
 ---
-interface Idea {
-  timestamp: string;
-  name: string;
-  idea: string;
-  status: string;
-  score: number;
-  reason: string;
-}
-
-interface Stats {
-  approved: number;
-  pending: number;
-  rejected: number;
-}
+import {
+  emptyIdeasPayload,
+  fetchIdeas,
+  type IdeasPayload,
+} from '../lib/ideas';
 
 const apiUrl = import.meta.env.APPS_SCRIPT_API_URL;
 const formUrl = import.meta.env.PUBLIC_FORM_URL;
 
-let ideas: Idea[] = [];
-let stats: Stats = { approved: 0, pending: 0, rejected: 0 };
+let data: IdeasPayload = emptyIdeasPayload();
+let dataUnavailable = false;
 
 try {
-  const res = await fetch(`${apiUrl}?format=json`);
-  if (res.ok) {
-    const data = await res.json();
-    ideas = data.ideas ?? [];
-    stats = data.stats ?? stats;
-  }
-} catch {
-  // serve empty state on upstream failure
+  data = await fetchIdeas(apiUrl);
+} catch (error) {
+  dataUnavailable = true;
+  console.error('Page data error:', error);
 }
 
+const { ideas, stats } = data;
 Astro.response.headers.set('Cache-Control', 's-maxage=30, stale-while-revalidate=60');
 ---
 
@@ -61,9 +49,11 @@ Astro.response.headers.set('Cache-Control', 's-maxage=30, stale-while-revalidate
           Kjo faqe mbledh ide qytetare për propozime ligjore. Përgjigjet filtrohen
           automatikisht, ruhen në backup dhe idetë e pastra shfaqen publikisht këtu.
         </p>
-        <a class="primary-btn" href={formUrl} target="_blank" rel="noopener">
-          Dërgo idenë tënde
-        </a>
+        {formUrl ? (
+          <a class="primary-btn" href={formUrl} target="_blank" rel="noopener">
+            Dërgo idenë tënde
+          </a>
+        ) : null}
       </div>
 
       <aside class="side-panel">
@@ -105,7 +95,11 @@ Astro.response.headers.set('Cache-Control', 's-maxage=30, stale-while-revalidate
         </div>
       </div>
 
-      {ideas.length > 0 ? (
+      {dataUnavailable ? (
+        <div class="empty error-state" role="alert">
+          Të dhënat nuk mund të ngarkohen për momentin. Ju lutemi provoni përsëri së shpejti.
+        </div>
+      ) : ideas.length > 0 ? (
         <div class="ideas-grid">
           {ideas.map((item, index) => (
             <article class="idea-card">
@@ -338,6 +332,10 @@ Astro.response.headers.set('Cache-Control', 's-maxage=30, stale-while-revalidate
     background: rgba(255, 255, 255, 0.08);
     border: 1px dashed var(--border);
     border-radius: 24px;
+  }
+
+  .error-state {
+    border-color: rgba(255, 158, 216, 0.55);
   }
 
   .footer {
