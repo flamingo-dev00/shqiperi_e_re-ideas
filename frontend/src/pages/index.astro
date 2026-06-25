@@ -103,6 +103,15 @@ Astro.response.headers.set('Cache-Control', 'no-store');
           </span>
         </div>
 
+        <div class="moderation-note">
+          <span aria-hidden="true">✓</span>
+          <p>
+            Përpara publikimit, idetë kontrollohen automatikisht për gjuhë fyese,
+            fjalor të papërshtatshëm, spam dhe të dhëna personale. Këtu shfaqen
+            vetëm propozimet që kalojnë filtrimin.
+          </p>
+        </div>
+
         {dataUnavailable ? (
           <p id="ideas-notice" class="notice error" role="alert">
             Të dhënat nuk mund të ngarkohen. Kontrollo konfigurimin e API-së.
@@ -445,6 +454,34 @@ Astro.response.headers.set('Cache-Control', 'no-store');
 
   .section-heading h2 { margin: 0; }
 
+  .moderation-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    margin-bottom: 18px;
+    padding: 14px 16px;
+    color: #5f5651;
+    background: #f4f0e9;
+    border: 1px solid #e2d9cf;
+    border-radius: 9px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .moderation-note span {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 22px;
+    height: 22px;
+    color: #fff;
+    background: #79876f;
+    border-radius: 50%;
+    font-weight: 800;
+  }
+
+  .moderation-note p { margin: 0; }
+
   .live-status {
     display: inline-flex;
     align-items: center;
@@ -470,7 +507,18 @@ Astro.response.headers.set('Cache-Control', 'no-store');
   article {
     position: relative;
     overflow: hidden;
-    padding: 22px;
+    min-height: 142px;
+    padding: 22px 24px 20px;
+    background: #fffdf9;
+    border: 1px solid #ded4ca;
+    border-radius: 11px;
+    box-shadow: 0 10px 30px rgba(68, 50, 42, .06);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+
+  article:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 34px rgba(68, 50, 42, .09);
   }
 
   article::before {
@@ -481,8 +529,21 @@ Astro.response.headers.set('Cache-Control', 'no-store');
     content: "";
   }
 
-  article p { margin: 0 0 20px; line-height: 1.6; }
-  article small { color: #776b65; }
+  article p {
+    margin: 0 0 22px;
+    color: #2f2926;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 18px;
+    line-height: 1.55;
+  }
+
+  article small {
+    display: block;
+    padding-top: 12px;
+    color: #776b65;
+    border-top: 1px solid #eee7df;
+    font-size: 13px;
+  }
 
   .notice {
     padding: 24px;
