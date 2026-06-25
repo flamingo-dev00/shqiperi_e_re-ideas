@@ -1,9 +1,9 @@
 import { defineConfig } from 'astro/config';
-import vercel from '@astrojs/vercel';
+import netlify from '@astrojs/netlify';
 import tailwind from '@astrojs/tailwind';
 
 export default defineConfig({
   output: 'server',
-  adapter: vercel(),
+  adapter: netlify(),
   integrations: [tailwind()],
 });
