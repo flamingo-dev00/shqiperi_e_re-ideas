@@ -122,8 +122,8 @@ Astro.response.headers.set('Cache-Control', 'no-store');
           <div id="ideas-list" class="ideas">
             {ideas.map((item) => (
               <article class="idea-card">
-                <p>{item.idea}</p>
-                <small>{item.name || 'Anonim'}</small>
+                <p class="idea-text">{item.idea}</p>
+                <small class="idea-author">{item.name || 'Anonim'}</small>
               </article>
             ))}
           </div>
@@ -174,7 +174,9 @@ Astro.response.headers.set('Cache-Control', 'no-store');
             const article = document.createElement('article');
             article.className = 'idea-card';
             const text = document.createElement('p');
+            text.className = 'idea-text';
             const author = document.createElement('small');
+            author.className = 'idea-author';
 
             text.textContent = typeof item.idea === 'string' ? item.idea : '';
             author.textContent =
@@ -210,7 +212,7 @@ Astro.response.headers.set('Cache-Control', 'no-store');
   </body>
 </html>
 
-<style>
+<style is:global>
   :root {
     font-family: Inter, system-ui, sans-serif;
     color: #272323;
@@ -401,7 +403,7 @@ Astro.response.headers.set('Cache-Control', 'no-store');
   }
 
   .stats div,
-  :global(.idea-card),
+  .idea-card,
   .notice {
     background: rgba(255, 255, 255, .88);
     border: 1px solid #e8ded5;
@@ -505,7 +507,7 @@ Astro.response.headers.set('Cache-Control', 'no-store');
     gap: 14px;
   }
 
-  :global(.idea-card) {
+  .idea-card {
     position: relative;
     overflow: hidden;
     min-height: 142px;
@@ -517,12 +519,12 @@ Astro.response.headers.set('Cache-Control', 'no-store');
     transition: transform .15s ease, box-shadow .15s ease;
   }
 
-  :global(.idea-card):hover {
+  .idea-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 14px 34px rgba(68, 50, 42, .09);
   }
 
-  :global(.idea-card)::before {
+  .idea-card::before {
     position: absolute;
     inset: 0 auto 0 0;
     width: 4px;
@@ -530,7 +532,7 @@ Astro.response.headers.set('Cache-Control', 'no-store');
     content: "";
   }
 
-  :global(.idea-card) p {
+  .idea-text {
     margin: 0 0 22px;
     color: #2f2926;
     font-family: Georgia, 'Times New Roman', serif;
@@ -538,7 +540,7 @@ Astro.response.headers.set('Cache-Control', 'no-store');
     line-height: 1.55;
   }
 
-  :global(.idea-card) small {
+  .idea-author {
     display: block;
     padding-top: 12px;
     color: #776b65;
