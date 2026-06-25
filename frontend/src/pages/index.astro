@@ -123,6 +123,11 @@ Astro.response.headers.set('Cache-Control', 'no-store');
             {ideas.map((item) => (
               <article class="idea-card">
                 <p class="idea-text">{item.idea}</p>
+                {item.idea.length > 180 && (
+                  <button class="idea-toggle" type="button" aria-expanded="false">
+                    Trego më shumë
+                  </button>
+                )}
                 <small class="idea-author">{item.name || 'Anonim'}</small>
               </article>
             ))}
@@ -184,11 +189,37 @@ Astro.response.headers.set('Cache-Control', 'no-store');
                 ? item.name
                 : 'Anonim';
 
-            article.append(text, author);
+            article.append(text);
+
+            if (text.textContent.length > 180) {
+              const toggle = document.createElement('button');
+              toggle.className = 'idea-toggle';
+              toggle.type = 'button';
+              toggle.setAttribute('aria-expanded', 'false');
+              toggle.textContent = 'Trego më shumë';
+              article.append(toggle);
+            }
+
+            article.append(author);
             return article;
           }),
         );
       }
+
+      document.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+
+        const toggle = target.closest('.idea-toggle');
+        if (!(toggle instanceof HTMLButtonElement)) return;
+
+        const card = toggle.closest('.idea-card');
+        if (!card) return;
+
+        const expanded = card.classList.toggle('is-expanded');
+        toggle.setAttribute('aria-expanded', String(expanded));
+        toggle.textContent = expanded ? 'Trego më pak' : 'Trego më shumë';
+      });
 
       async function refreshIdeas() {
         try {
@@ -539,6 +570,27 @@ Astro.response.headers.set('Cache-Control', 'no-store');
     font-size: 18px;
     line-height: 1.55;
   }
+
+  .idea-card:not(.is-expanded) .idea-text {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+  }
+
+  .idea-toggle {
+    margin: -8px 0 16px;
+    padding: 0;
+    color: #8f454c;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 750;
+  }
+
+  .idea-toggle:hover { text-decoration: underline; }
 
   .idea-author {
     display: block;
