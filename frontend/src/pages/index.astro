@@ -5,14 +5,12 @@ import {
   type IdeasPayload,
 } from '../lib/ideas';
 
-const apiUrl = import.meta.env.APPS_SCRIPT_API_URL;
 const formUrl = import.meta.env.PUBLIC_FORM_URL;
-
 let data: IdeasPayload = emptyIdeasPayload();
 let dataUnavailable = false;
 
 try {
-  data = await fetchIdeas(apiUrl);
+  data = await fetchIdeas(import.meta.env.APPS_SCRIPT_API_URL);
 } catch (error) {
   dataUnavailable = true;
   console.error('Page data error:', error);
@@ -22,335 +20,177 @@ const { ideas, stats } = data;
 Astro.response.headers.set('Cache-Control', 's-maxage=30, stale-while-revalidate=60');
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="sq">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ide për Shqipërinë e Re</title>
-</head>
-
-<body>
-  <main class="page">
-
-    <nav class="nav">
-      <div class="logo">
-        <div class="logo-mark"></div>
-        <span>Ide për Shqipërinë e Re</span>
-      </div>
-      <div class="nav-note">Paneli publik i ideve të aprovuara</div>
-    </nav>
-
-    <section class="hero">
-      <div class="hero-card">
-        <div class="eyebrow">Platformë qytetare · Version fillestar publik</div>
-        <h1>Shkruaj një ide. Ktheje në propozim.</h1>
-        <p>
-          Kjo faqe mbledh ide qytetare për propozime ligjore. Përgjigjet filtrohen
-          automatikisht, ruhen në backup dhe idetë e pastra shfaqen publikisht këtu.
-        </p>
-        {formUrl ? (
-          <a class="primary-btn" href={formUrl} target="_blank" rel="noopener">
-            Dërgo idenë tënde
-          </a>
-        ) : null}
-      </div>
-
-      <aside class="side-panel">
-        <div class="stat">
-          <div class="stat-number">{stats.approved}</div>
-          <div class="stat-label">Ide të aprovuara</div>
-        </div>
-        <div class="stat">
-          <div class="stat-number">{stats.pending}</div>
-          <div class="stat-label">Në shqyrtim</div>
-        </div>
-        <div class="stat">
-          <div class="stat-number">{stats.rejected}</div>
-          <div class="stat-label">Të filtruara</div>
-        </div>
-      </aside>
-    </section>
-
-    <section class="info-strip">
-      <div class="info-box">
-        <strong>1. Dërgo idenë</strong>
-        <span>Plotëso formularin me një ide të qartë, konkrete dhe pa të dhëna personale.</span>
-      </div>
-      <div class="info-box">
-        <strong>2. Filtrohet</strong>
-        <span>Teksti kontrollohet për sharje, spam, agresion, linke dhe të dhëna personale.</span>
-      </div>
-      <div class="info-box">
-        <strong>3. Publikohet</strong>
-        <span>Nëse kalon kontrollin, ideja shfaqet këtu si pjesë e panelit publik.</span>
-      </div>
-    </section>
-
-    <section>
-      <div class="section-head">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Ide qytetare për Shqipërinë e Re."
+    />
+    <title>Ide për Shqipërinë e Re</title>
+  </head>
+  <body>
+    <main>
+      <header>
         <div>
-          <h2>Idetë e aprovuara</h2>
-          <p>Lista përditësohet automatikisht pas çdo përgjigjeje që kalon filtrin.</p>
+          <p class="label">Platformë qytetare</p>
+          <h1>Ide për Shqipërinë e Re</h1>
+          <p class="intro">
+            Lexo idetë e aprovuara ose dërgo propozimin tënd.
+          </p>
         </div>
-      </div>
 
-      {dataUnavailable ? (
-        <div class="empty error-state" role="alert">
-          Të dhënat nuk mund të ngarkohen për momentin. Ju lutemi provoni përsëri së shpejti.
-        </div>
-      ) : ideas.length > 0 ? (
-        <div class="ideas-grid">
-          {ideas.map((item, index) => (
-            <article class="idea-card">
-              <div class="card-top">
-                <span class="badge">Ide #{ideas.length - index}</span>
-                <span class="author">{item.name || 'Anonim'}</span>
-              </div>
-              <p>{item.idea}</p>
-            </article>
-          ))}
-        </div>
-      ) : (
-        <div class="empty">
-          Ende nuk ka ide të aprovuara. Dërgo idenë e parë nga formulari.
-        </div>
-      )}
-    </section>
+        {formUrl && (
+          <a href={formUrl} target="_blank" rel="noopener noreferrer">
+            Dërgo një ide
+          </a>
+        )}
+      </header>
 
-    <footer class="footer">
-      Mos vendos të dhëna personale. Përgjigjet mund të përpunohen me mjete automatike
-      dhe të përdoren për hartimin e propozimeve ligjore.
-    </footer>
+      <section class="stats" aria-label="Statistikat">
+        <div><strong>{stats.approved}</strong><span>Të publikuara</span></div>
+        <div><strong>{stats.pending}</strong><span>Në shqyrtim</span></div>
+        <div><strong>{stats.rejected}</strong><span>Të filtruara</span></div>
+      </section>
 
-  </main>
-</body>
+      <section>
+        <h2>Idetë e aprovuara</h2>
+
+        {dataUnavailable ? (
+          <p class="notice error" role="alert">
+            Të dhënat nuk mund të ngarkohen. Kontrollo konfigurimin e API-së.
+          </p>
+        ) : ideas.length === 0 ? (
+          <p class="notice">Ende nuk ka ide të publikuara.</p>
+        ) : (
+          <div class="ideas">
+            {ideas.map((item) => (
+              <article>
+                <p>{item.idea}</p>
+                <small>{item.name || 'Anonim'}</small>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <footer>
+        Mos vendos të dhëna personale në propozimin tënd.
+      </footer>
+    </main>
+  </body>
 </html>
 
 <style>
   :root {
-    --bg: #120916;
-    --bg2: #24102c;
-    --pink: #ff4fb8;
-    --pink2: #ff9ed8;
-    --purple: #7c3aed;
-    --text: #ffffff;
-    --muted: #dccde4;
-    --card: rgba(255, 255, 255, 0.09);
-    --border: rgba(255, 255, 255, 0.16);
+    font-family: Inter, system-ui, sans-serif;
+    color: #24212a;
+    background: #f7f5f8;
   }
 
   * { box-sizing: border-box; }
 
   body {
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    color: var(--text);
-    background:
-      radial-gradient(circle at top left, rgba(255, 79, 184, 0.38), transparent 34%),
-      radial-gradient(circle at top right, rgba(124, 58, 237, 0.34), transparent 34%),
-      linear-gradient(135deg, var(--bg), var(--bg2));
     min-height: 100vh;
   }
 
-  .page {
-    width: min(1120px, 92%);
-    margin: 0 auto;
-    padding: 32px 0 64px;
+  main {
+    width: min(920px, 92%);
+    margin: auto;
+    padding: 56px 0 32px;
   }
 
-  .nav {
+  header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 54px;
+    align-items: end;
+    gap: 24px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid #ddd7e1;
   }
 
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 800;
-    letter-spacing: -0.3px;
-  }
-
-  .logo-mark {
-    width: 34px;
-    height: 34px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--pink), var(--purple));
-    box-shadow: 0 0 28px rgba(255, 79, 184, 0.45);
-    flex-shrink: 0;
-  }
-
-  .nav-note { color: var(--muted); font-size: 14px; }
-
-  .hero {
-    display: grid;
-    grid-template-columns: 1.15fr 0.85fr;
-    gap: 34px;
-    align-items: center;
-    margin-bottom: 42px;
-  }
-
-  .hero-card {
-    padding: 34px;
-    border: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.075);
-    backdrop-filter: blur(18px);
-    border-radius: 28px;
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
-  }
-
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-radius: 999px;
-    background: rgba(255, 79, 184, 0.14);
-    color: var(--pink2);
+  .label {
+    margin: 0 0 8px;
+    color: #7b3f78;
     font-size: 14px;
     font-weight: 700;
-    margin-bottom: 18px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
   }
 
   h1 {
     margin: 0;
-    font-size: clamp(38px, 7vw, 72px);
-    line-height: 0.96;
-    letter-spacing: -2.5px;
+    font-size: clamp(34px, 6vw, 58px);
+    line-height: 1;
   }
 
-  .hero p {
+  .intro {
+    margin: 14px 0 0;
+    color: #67606b;
     font-size: 18px;
-    line-height: 1.65;
-    color: var(--muted);
-    margin: 22px 0 28px;
   }
 
-  .primary-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 15px 22px;
-    background: linear-gradient(135deg, var(--pink), var(--purple));
+  a {
+    flex: 0 0 auto;
+    padding: 12px 18px;
+    border-radius: 9px;
     color: white;
-    border-radius: 14px;
+    background: #713b70;
     text-decoration: none;
-    font-weight: 800;
-    box-shadow: 0 18px 40px rgba(255, 79, 184, 0.28);
-    transition: opacity 0.15s ease;
+    font-weight: 700;
   }
 
-  .primary-btn:hover { opacity: 0.88; }
-
-  .side-panel { display: grid; gap: 14px; }
-
-  .stat {
-    padding: 22px;
-    border-radius: 22px;
-    background: var(--card);
-    border: 1px solid var(--border);
-  }
-
-  .stat-number { font-size: 42px; font-weight: 900; line-height: 1; }
-  .stat-label { margin-top: 8px; color: var(--muted); font-size: 15px; }
-
-  .info-strip {
+  .stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    margin: 26px 0 46px;
+    gap: 12px;
+    margin: 28px 0 48px;
   }
 
-  .info-box {
-    padding: 18px;
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid var(--border);
+  .stats div,
+  article,
+  .notice {
+    background: white;
+    border: 1px solid #e3dee6;
+    border-radius: 12px;
   }
 
-  .info-box strong { display: block; margin-bottom: 7px; color: white; }
-  .info-box span { color: var(--muted); font-size: 14px; line-height: 1.45; }
+  .stats div { padding: 18px; }
+  .stats strong { display: block; font-size: 30px; }
+  .stats span { color: #756e79; font-size: 14px; }
 
-  .section-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: end;
-    gap: 18px;
-    margin-bottom: 18px;
-  }
+  h2 { margin: 0 0 18px; font-size: 26px; }
 
-  h2 { font-size: 32px; margin: 0; letter-spacing: -1px; }
-  .section-head p { margin: 8px 0 0; color: var(--muted); }
-
-  .ideas-grid {
+  .ideas {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
+    gap: 14px;
   }
 
-  .idea-card {
-    padding: 22px;
-    border-radius: 22px;
-    background: rgba(255, 255, 255, 0.095);
-    border: 1px solid var(--border);
-    min-height: 150px;
-    transition: transform 0.15s ease, background 0.15s ease;
+  article { padding: 20px; }
+  article p { margin: 0 0 20px; line-height: 1.6; }
+  article small { color: #756e79; }
+
+  .notice {
+    padding: 24px;
+    color: #67606b;
   }
 
-  .idea-card:hover {
-    transform: translateY(-3px);
-    background: rgba(255, 255, 255, 0.13);
-  }
+  .error { border-color: #d99; color: #8b2525; }
 
-  .card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-
-  .badge {
-    padding: 6px 10px;
-    border-radius: 999px;
-    background: rgba(255, 79, 184, 0.15);
-    color: var(--pink2);
-    font-size: 12px;
-    font-weight: 800;
-  }
-
-  .author { color: var(--muted); font-size: 13px; }
-  .idea-card p { margin: 0; font-size: 16px; line-height: 1.58; }
-
-  .empty {
-    padding: 38px;
-    text-align: center;
-    color: var(--muted);
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px dashed var(--border);
-    border-radius: 24px;
-  }
-
-  .error-state {
-    border-color: rgba(255, 158, 216, 0.55);
-  }
-
-  .footer {
-    margin-top: 44px;
-    padding-top: 24px;
-    border-top: 1px solid var(--border);
-    color: var(--muted);
+  footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd7e1;
+    color: #756e79;
     font-size: 13px;
-    line-height: 1.6;
   }
 
-  @media (max-width: 800px) {
-    .hero { grid-template-columns: 1fr; }
-    .info-strip { grid-template-columns: 1fr; }
-    .ideas-grid { grid-template-columns: 1fr; }
-    .nav { flex-direction: column; align-items: start; gap: 12px; }
+  @media (max-width: 650px) {
+    header { align-items: start; flex-direction: column; }
+    .stats, .ideas { grid-template-columns: 1fr; }
   }
 </style>
