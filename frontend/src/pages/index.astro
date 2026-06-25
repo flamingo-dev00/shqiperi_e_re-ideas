@@ -41,10 +41,10 @@ Astro.response.headers.set('Cache-Control', 'no-store');
         </span>
       </aside>
 
-      <header>
-        <div>
+      <header class="hero">
+        <img class="hero-flamingo hero-flamingo-left" src="/flamingo-decor.svg" alt="" />
+        <div class="hero-content">
           <p class="label">
-            <img src="/favicon.svg" alt="" />
             Platformë qytetare
             <img src="/albania-flag.svg" alt="Flamuri shqiptar" />
           </p>
@@ -52,26 +52,27 @@ Astro.response.headers.set('Cache-Control', 'no-store');
           <p class="intro">
             Lexo idetë e aprovuara, dërgo propozimin tënd dhe ndiq procesin me transparencë.
           </p>
-        </div>
 
-        <div class="actions">
-          {formUrl && (
-            <a class="primary" href={formUrl} target="_blank" rel="noopener noreferrer">
-              Dërgo një ide
+          <div class="actions">
+            {formUrl && (
+              <a class="primary" href={formUrl} target="_blank" rel="noopener noreferrer">
+                Dërgo një ide
+              </a>
+            )}
+            <a
+              class="discord"
+              href="https://discord.gg/aUm4WhzEp"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M19.5 5.3A17 17 0 0 0 15.3 4l-.5 1.1a15.4 15.4 0 0 0-5.6 0L8.7 4a17 17 0 0 0-4.2 1.3C1.8 9.2 1.1 13 1.5 16.8A17 17 0 0 0 6.7 19l1.3-1.8-1.8-.9.4-.3a12.3 12.3 0 0 0 10.8 0l.4.3-1.8.9 1.3 1.8a17 17 0 0 0 5.2-2.2c.5-4.4-.8-8.1-3-11.5ZM8.8 14.7c-1 0-1.9-1-1.9-2.2s.8-2.2 1.9-2.2 1.9 1 1.9 2.2-.9 2.2-1.9 2.2Zm6.4 0c-1 0-1.9-1-1.9-2.2s.8-2.2 1.9-2.2 1.9 1 1.9 2.2-.8 2.2-1.9 2.2Z"/>
+              </svg>
+              Bashkohu me ne ose jep idetë e tua
             </a>
-          )}
-          <a
-            class="discord"
-            href="https://discord.gg/aUm4WhzEp"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M19.5 5.3A17 17 0 0 0 15.3 4l-.5 1.1a15.4 15.4 0 0 0-5.6 0L8.7 4a17 17 0 0 0-4.2 1.3C1.8 9.2 1.1 13 1.5 16.8A17 17 0 0 0 6.7 19l1.3-1.8-1.8-.9.4-.3a12.3 12.3 0 0 0 10.8 0l.4.3-1.8.9 1.3 1.8a17 17 0 0 0 5.2-2.2c.5-4.4-.8-8.1-3-11.5ZM8.8 14.7c-1 0-1.9-1-1.9-2.2s.8-2.2 1.9-2.2 1.9 1 1.9 2.2-.9 2.2-1.9 2.2Zm6.4 0c-1 0-1.9-1-1.9-2.2s.8-2.2 1.9-2.2 1.9 1 1.9 2.2-.8 2.2-1.9 2.2Z"/>
-            </svg>
-            Bashkohu me ne ose jep idetë e tua
-          </a>
+          </div>
         </div>
+        <img class="hero-flamingo hero-flamingo-right" src="/flamingo-decor.svg" alt="" />
       </header>
 
       <section class="stats" aria-label="Statistikat">
@@ -202,8 +203,8 @@ Astro.response.headers.set('Cache-Control', 'no-store');
 <style>
   :root {
     font-family: Inter, system-ui, sans-serif;
-    color: #2d1726;
-    background: #fff7fb;
+    color: #272323;
+    background: #faf7f2;
   }
 
   * { box-sizing: border-box; }
@@ -212,8 +213,8 @@ Astro.response.headers.set('Cache-Control', 'no-store');
     margin: 0;
     min-height: 100vh;
     background:
-      radial-gradient(circle at 8% 0%, rgba(255, 128, 190, .22), transparent 28rem),
-      linear-gradient(180deg, #fff7fb 0%, #fff 55%, #fff8fb 100%);
+      radial-gradient(circle at 10% 0%, rgba(205, 112, 116, .11), transparent 30rem),
+      linear-gradient(180deg, #faf7f2 0%, #fff 58%, #faf7f2 100%);
   }
 
   main {
@@ -228,10 +229,10 @@ Astro.response.headers.set('Cache-Control', 'no-store');
     gap: 12px;
     margin-bottom: 22px;
     padding: 12px 15px;
-    color: #6d294f;
-    background: #ffe4f1;
-    border: 1px solid #ffc5df;
-    border-radius: 12px;
+    color: #684247;
+    background: #f5e7e4;
+    border: 1px solid #e8d1cd;
+    border-radius: 8px;
     font-size: 14px;
   }
 
@@ -239,26 +240,71 @@ Astro.response.headers.set('Cache-Control', 'no-store');
     flex: 0 0 auto;
     padding: 4px 8px;
     color: #fff;
-    background: #d93484;
+    background: #9f4f55;
     border-radius: 999px;
     font-size: 12px;
   }
 
-  header {
+  .hero {
+    position: relative;
     display: flex;
-    justify-content: space-between;
-    align-items: end;
-    gap: 24px;
-    padding-bottom: 32px;
-    border-bottom: 1px solid #efd5e3;
+    align-items: center;
+    justify-content: center;
+    min-height: 330px;
+    padding: 42px 150px 58px;
+    overflow: hidden;
+    text-align: center;
+    background:
+      linear-gradient(rgba(255,255,255,.2), rgba(255,255,255,.2)),
+      #f6e5e2;
+    border: 1px solid #e8d1cd;
+    border-radius: 16px;
+    box-shadow: 0 18px 50px rgba(74, 46, 42, .07);
+  }
+
+  .hero::before,
+  .hero::after {
+    position: absolute;
+    right: 0;
+    left: 0;
+    height: 14px;
+    background: url('/albanian-pattern.svg') repeat-x center / auto 14px;
+    content: "";
+    opacity: .75;
+  }
+
+  .hero::before { top: 0; }
+  .hero::after { bottom: 0; }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 620px;
+  }
+
+  .hero-flamingo {
+    position: absolute;
+    bottom: 22px;
+    width: 145px;
+    height: 245px;
+    object-fit: contain;
+    opacity: .88;
+  }
+
+  .hero-flamingo-left { left: 15px; }
+  .hero-flamingo-right { right: 15px; transform: scaleX(-1); }
+
+  .hero::selection {
+    background: #d49a9c;
   }
 
   .label {
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: 8px;
     margin: 0 0 8px;
-    color: #b52f71;
+    color: #8f454c;
     font-size: 14px;
     font-weight: 700;
     text-transform: uppercase;
@@ -279,21 +325,28 @@ Astro.response.headers.set('Cache-Control', 'no-store');
 
   h1 {
     margin: 0;
-    font-size: clamp(34px, 6vw, 58px);
-    line-height: 1;
+    color: #7d343b;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(38px, 6vw, 62px);
+    font-weight: 500;
+    line-height: 1.06;
+    letter-spacing: -.025em;
   }
 
   .intro {
     margin: 14px 0 0;
-    color: #735467;
-    font-size: 18px;
+    color: #6f5c59;
+    font-size: 17px;
+    line-height: 1.6;
   }
 
   .actions {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: 10px;
-    min-width: 248px;
+    margin-top: 24px;
   }
 
   .actions a {
@@ -315,13 +368,13 @@ Astro.response.headers.set('Cache-Control', 'no-store');
 
   .primary {
     color: white;
-    background: linear-gradient(135deg, #e33b8d, #b52f71);
-    box-shadow: 0 8px 22px rgba(181, 47, 113, .18);
+    background: #9f4f55;
+    box-shadow: 0 8px 22px rgba(98, 47, 51, .14);
   }
 
   .discord {
     color: white;
-    background: #5865f2;
+    background: #4e5368;
   }
 
   .discord svg {
@@ -341,14 +394,14 @@ Astro.response.headers.set('Cache-Control', 'no-store');
   article,
   .notice {
     background: rgba(255, 255, 255, .88);
-    border: 1px solid #f0dce7;
-    border-radius: 14px;
-    box-shadow: 0 8px 24px rgba(92, 33, 65, .05);
+    border: 1px solid #e8ded5;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(70, 53, 43, .045);
   }
 
   .stats div { padding: 18px; }
-  .stats strong { display: block; color: #c72f79; font-size: 30px; }
-  .stats span { color: #806173; font-size: 14px; }
+  .stats strong { display: block; color: #8f454c; font-size: 30px; }
+  .stats span { color: #746963; font-size: 14px; }
 
   .transparency {
     display: flex;
@@ -356,10 +409,10 @@ Astro.response.headers.set('Cache-Control', 'no-store');
     gap: 20px;
     margin: 0 0 48px;
     padding: 22px;
-    color: #57213f;
-    background: linear-gradient(135deg, #ffe5f1, #fff3f8);
-    border: 1px solid #ffcce3;
-    border-radius: 14px;
+    color: #423a37;
+    background: #f3eee7;
+    border: 1px solid #e3d8cc;
+    border-radius: 10px;
   }
 
   .symbols {
@@ -372,9 +425,15 @@ Astro.response.headers.set('Cache-Control', 'no-store');
   .symbols img { width: 42px; height: 42px; object-fit: contain; }
   .symbols img:last-child { width: 52px; }
   .transparency h2 { margin-bottom: 6px; }
-  .transparency p { margin: 0; color: #765064; line-height: 1.55; }
+  .transparency p { margin: 0; color: #70655f; line-height: 1.55; }
 
-  h2 { margin: 0 0 18px; font-size: 26px; }
+  h2 {
+    margin: 0 0 18px;
+    color: #433b38;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 28px;
+    font-weight: 500;
+  }
 
   .section-heading {
     display: flex;
@@ -390,7 +449,7 @@ Astro.response.headers.set('Cache-Control', 'no-store');
     display: inline-flex;
     align-items: center;
     gap: 7px;
-    color: #8a687a;
+    color: #756a64;
     font-size: 12px;
   }
 
@@ -418,12 +477,12 @@ Astro.response.headers.set('Cache-Control', 'no-store');
     position: absolute;
     inset: 0 auto 0 0;
     width: 4px;
-    background: linear-gradient(#f05ba0, #b52f71);
+    background: #b9676c;
     content: "";
   }
 
   article p { margin: 0 0 20px; line-height: 1.6; }
-  article small { color: #8a687a; }
+  article small { color: #776b65; }
 
   .notice {
     padding: 24px;
@@ -438,8 +497,8 @@ Astro.response.headers.set('Cache-Control', 'no-store');
     gap: 18px;
     margin-top: 48px;
     padding-top: 20px;
-    border-top: 1px solid #efd5e3;
-    color: #806173;
+    border-top: 1px solid #e5dcd3;
+    color: #746963;
     font-size: 13px;
   }
 
@@ -452,8 +511,15 @@ Astro.response.headers.set('Cache-Control', 'no-store');
   @media (max-width: 650px) {
     main { padding-top: 24px; }
     .temporary-note { align-items: start; flex-direction: column; }
-    header { align-items: start; flex-direction: column; }
+    .hero {
+      min-height: 0;
+      padding: 48px 24px 64px;
+    }
+    .hero-flamingo { width: 80px; height: 140px; opacity: .34; }
+    .hero-flamingo-left { left: -10px; }
+    .hero-flamingo-right { right: -10px; }
     .actions { width: 100%; }
+    .actions a { width: 100%; }
     .stats, .ideas { grid-template-columns: 1fr; }
     .transparency { align-items: start; }
     .section-heading { align-items: start; flex-direction: column; }
