@@ -123,11 +123,14 @@ Astro.response.headers.set('Cache-Control', 'no-store');
             {ideas.map((item) => (
               <article class="idea-card">
                 <p class="idea-text">{item.idea}</p>
-                {item.idea.length > 180 && (
-                  <button class="idea-toggle" type="button" aria-expanded="false">
-                    Trego më shumë
-                  </button>
-                )}
+                <button
+                  class="idea-toggle"
+                  type="button"
+                  aria-expanded="false"
+                  hidden
+                >
+                  Trego më shumë
+                </button>
                 <small class="idea-author">{item.name || 'Anonim'}</small>
               </article>
             ))}
@@ -191,19 +194,35 @@ Astro.response.headers.set('Cache-Control', 'no-store');
 
             article.append(text);
 
-            if (text.textContent.length > 180) {
-              const toggle = document.createElement('button');
-              toggle.className = 'idea-toggle';
-              toggle.type = 'button';
-              toggle.setAttribute('aria-expanded', 'false');
-              toggle.textContent = 'Trego më shumë';
-              article.append(toggle);
-            }
+            const toggle = document.createElement('button');
+            toggle.className = 'idea-toggle';
+            toggle.type = 'button';
+            toggle.hidden = true;
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.textContent = 'Trego më shumë';
+            article.append(toggle);
 
             article.append(author);
             return article;
           }),
         );
+
+        requestAnimationFrame(updateIdeaToggles);
+      }
+
+      function updateIdeaToggles() {
+        document.querySelectorAll('.idea-card').forEach((card) => {
+          const text = card.querySelector('.idea-text');
+          const toggle = card.querySelector('.idea-toggle');
+          if (!(text instanceof HTMLElement) || !(toggle instanceof HTMLButtonElement)) return;
+
+          if (card.classList.contains('is-expanded')) {
+            toggle.hidden = false;
+            return;
+          }
+
+          toggle.hidden = text.scrollHeight <= text.clientHeight + 1;
+        });
       }
 
       document.addEventListener('click', (event) => {
@@ -220,6 +239,15 @@ Astro.response.headers.set('Cache-Control', 'no-store');
         toggle.setAttribute('aria-expanded', String(expanded));
         toggle.textContent = expanded ? 'Trego më pak' : 'Trego më shumë';
       });
+
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(updateIdeaToggles, 120);
+      });
+
+      updateIdeaToggles();
+      document.fonts?.ready.then(updateIdeaToggles);
 
       async function refreshIdeas() {
         try {
@@ -590,6 +618,7 @@ Astro.response.headers.set('Cache-Control', 'no-store');
     font-weight: 750;
   }
 
+  .idea-toggle[hidden] { display: none; }
   .idea-toggle:hover { text-decoration: underline; }
 
   .idea-author {
