@@ -17,7 +17,7 @@ try {
 }
 
 const { ideas, stats } = data;
-Astro.response.headers.set('Cache-Control', 's-maxage=30, stale-while-revalidate=60');
+Astro.response.headers.set('Cache-Control', 'no-store');
 ---
 
 <!doctype html>
@@ -75,8 +75,8 @@ Astro.response.headers.set('Cache-Control', 's-maxage=30, stale-while-revalidate
       </header>
 
       <section class="stats" aria-label="Statistikat">
-        <div><strong>{stats.approved}</strong><span>Të publikuara</span></div>
-        <div><strong>{stats.rejected}</strong><span>Të filtruara</span></div>
+        <div><strong id="approved-count">{stats.approved}</strong><span>Të publikuara</span></div>
+        <div><strong id="rejected-count">{stats.rejected}</strong><span>Të filtruara</span></div>
       </section>
 
       <section class="transparency">
@@ -94,16 +94,22 @@ Astro.response.headers.set('Cache-Control', 's-maxage=30, stale-while-revalidate
       </section>
 
       <section class="ideas-section">
-        <h2>Idetë e aprovuara</h2>
+        <div class="section-heading">
+          <h2>Idetë e aprovuara</h2>
+          <span class="live-status">
+            <i aria-hidden="true"></i>
+            Përditësohet automatikisht
+          </span>
+        </div>
 
         {dataUnavailable ? (
-          <p class="notice error" role="alert">
+          <p id="ideas-notice" class="notice error" role="alert">
             Të dhënat nuk mund të ngarkohen. Kontrollo konfigurimin e API-së.
           </p>
         ) : ideas.length === 0 ? (
-          <p class="notice">Ende nuk ka ide të publikuara.</p>
+          <p id="ideas-notice" class="notice">Ende nuk ka ide të publikuara.</p>
         ) : (
-          <div class="ideas">
+          <div id="ideas-list" class="ideas">
             {ideas.map((item) => (
               <article>
                 <p>{item.idea}</p>
@@ -123,6 +129,73 @@ Astro.response.headers.set('Cache-Control', 's-maxage=30, stale-while-revalidate
         <span>Mos vendos të dhëna personale në propozimin tënd.</span>
       </footer>
     </main>
+
+    <script>
+      const approvedCount = document.querySelector('#approved-count');
+      const rejectedCount = document.querySelector('#rejected-count');
+      const ideasSection = document.querySelector('.ideas-section');
+
+      function renderIdeas(items) {
+        let list = document.querySelector('#ideas-list');
+        let notice = document.querySelector('#ideas-notice');
+
+        if (!Array.isArray(items) || items.length === 0) {
+          list?.remove();
+          if (!notice) {
+            notice = document.createElement('p');
+            notice.id = 'ideas-notice';
+            notice.className = 'notice';
+            ideasSection?.appendChild(notice);
+          }
+          notice.textContent = 'Ende nuk ka ide të publikuara.';
+          return;
+        }
+
+        notice?.remove();
+        if (!list) {
+          list = document.createElement('div');
+          list.id = 'ideas-list';
+          list.className = 'ideas';
+          ideasSection?.appendChild(list);
+        }
+
+        list.replaceChildren(
+          ...items.map((item) => {
+            const article = document.createElement('article');
+            const text = document.createElement('p');
+            const author = document.createElement('small');
+
+            text.textContent = typeof item.idea === 'string' ? item.idea : '';
+            author.textContent =
+              typeof item.name === 'string' && item.name.trim()
+                ? item.name
+                : 'Anonim';
+
+            article.append(text, author);
+            return article;
+          }),
+        );
+      }
+
+      async function refreshIdeas() {
+        try {
+          const response = await fetch('/api/ideas', { cache: 'no-store' });
+          if (!response.ok) return;
+
+          const data = await response.json();
+          if (approvedCount) approvedCount.textContent = String(data.stats?.approved ?? 0);
+          if (rejectedCount) rejectedCount.textContent = String(data.stats?.rejected ?? 0);
+          renderIdeas(data.ideas);
+        } catch {
+          // Mbaj të dhënat e fundit në ekran nëse një kërkesë dështon.
+        }
+      }
+
+      window.setInterval(refreshIdeas, 10_000);
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') refreshIdeas();
+      });
+    </script>
   </body>
 </html>
 
@@ -303,6 +376,32 @@ Astro.response.headers.set('Cache-Control', 's-maxage=30, stale-while-revalidate
 
   h2 { margin: 0 0 18px; font-size: 26px; }
 
+  .section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .section-heading h2 { margin: 0; }
+
+  .live-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #8a687a;
+    font-size: 12px;
+  }
+
+  .live-status i {
+    width: 8px;
+    height: 8px;
+    background: #2eb67d;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(46, 182, 125, .12);
+  }
+
   .ideas {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -357,6 +456,7 @@ Astro.response.headers.set('Cache-Control', 's-maxage=30, stale-while-revalidate
     .actions { width: 100%; }
     .stats, .ideas { grid-template-columns: 1fr; }
     .transparency { align-items: start; }
+    .section-heading { align-items: start; flex-direction: column; }
     footer { flex-direction: column; }
   }
 </style>
