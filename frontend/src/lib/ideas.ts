@@ -36,6 +36,14 @@ function parsePayload(value: unknown): IdeasPayload {
     throw new Error('Apps Script returned an unexpected JSON shape.');
   }
 
+  if (value.ok === false) {
+    throw new Error(
+      typeof value.error === 'string'
+        ? value.error
+        : 'Apps Script reported an unknown error.',
+    );
+  }
+
   const ideas = value.ideas
     .filter(isRecord)
     .filter((item) => item.status === 'APPROVED')
