@@ -120,7 +120,7 @@ Astro.response.headers.set('Cache-Control', 'no-store');
         ) : (
           <div id="ideas-list" class="ideas">
             {ideas.map((item) => (
-              <article class="idea-card">
+              <article class="idea-card" data-idea-key={`${item.timestamp}::${item.idea}`}>
                 <p class="idea-text">{item.idea}</p>
                 <button
                   class="idea-toggle"
@@ -150,6 +150,26 @@ Astro.response.headers.set('Cache-Control', 'no-store');
       const approvedCount = document.querySelector('#approved-count');
       const ideasSection = document.querySelector('.ideas-section');
 
+      function makeIdeaKey(item) {
+        const timestamp = typeof item.timestamp === 'string' ? item.timestamp.trim() : '';
+        const idea = typeof item.idea === 'string' ? item.idea.trim() : '';
+        return `${timestamp}::${idea}`;
+      }
+
+      function getCardKey(card) {
+        if (!(card instanceof HTMLElement)) return '';
+        const text = card.querySelector('.idea-text');
+        return card.dataset.ideaKey || text?.textContent?.trim() || '';
+      }
+
+      function getExpandedIdeaKeys() {
+        return new Set(
+          [...document.querySelectorAll('.idea-card.is-expanded')]
+            .map(getCardKey)
+            .filter(Boolean),
+        );
+      }
+
       function renderIdeas(items) {
         let list = document.querySelector('#ideas-list');
         let notice = document.querySelector('#ideas-notice');
@@ -174,10 +194,16 @@ Astro.response.headers.set('Cache-Control', 'no-store');
           ideasSection?.appendChild(list);
         }
 
+        const expandedIdeaKeys = getExpandedIdeaKeys();
+
         list.replaceChildren(
           ...items.map((item) => {
+            const ideaKey = makeIdeaKey(item);
+            const isExpanded = expandedIdeaKeys.has(ideaKey);
             const article = document.createElement('article');
             article.className = 'idea-card';
+            article.dataset.ideaKey = ideaKey;
+            if (isExpanded) article.classList.add('is-expanded');
             const text = document.createElement('p');
             text.className = 'idea-text';
 
@@ -188,9 +214,9 @@ Astro.response.headers.set('Cache-Control', 'no-store');
             const toggle = document.createElement('button');
             toggle.className = 'idea-toggle';
             toggle.type = 'button';
-            toggle.hidden = true;
-            toggle.setAttribute('aria-expanded', 'false');
-            toggle.textContent = 'Trego më shumë';
+            toggle.hidden = !isExpanded;
+            toggle.setAttribute('aria-expanded', String(isExpanded));
+            toggle.textContent = isExpanded ? 'Trego më pak' : 'Trego më shumë';
             article.append(toggle);
 
             return article;
