@@ -77,7 +77,6 @@ Astro.response.headers.set('Cache-Control', 'no-store');
 
       <section class="stats" aria-label="Statistikat">
         <div><strong id="approved-count">{stats.approved}</strong><span>Të publikuara</span></div>
-        <div><strong id="rejected-count">{stats.rejected}</strong><span>Të filtruara</span></div>
       </section>
 
       <section class="transparency">
@@ -150,7 +149,6 @@ Astro.response.headers.set('Cache-Control', 'no-store');
 
     <script>
       const approvedCount = document.querySelector('#approved-count');
-      const rejectedCount = document.querySelector('#rejected-count');
       const ideasSection = document.querySelector('.ideas-section');
 
       function renderIdeas(items) {
@@ -256,7 +254,6 @@ Astro.response.headers.set('Cache-Control', 'no-store');
 
           const data = await response.json();
           if (approvedCount) approvedCount.textContent = String(data.stats?.approved ?? 0);
-          if (rejectedCount) rejectedCount.textContent = String(data.stats?.rejected ?? 0);
           renderIdeas(data.ideas);
         } catch {
           // Mbaj të dhënat e fundit në ekran nëse një kërkesë dështon.
