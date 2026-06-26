@@ -180,14 +180,8 @@ Astro.response.headers.set('Cache-Control', 'no-store');
             article.className = 'idea-card';
             const text = document.createElement('p');
             text.className = 'idea-text';
-            const author = document.createElement('small');
-            author.className = 'idea-author';
 
             text.textContent = typeof item.idea === 'string' ? item.idea : '';
-            author.textContent =
-              typeof item.name === 'string' && item.name.trim()
-                ? item.name
-                : 'Anonim';
 
             article.append(text);
 
@@ -199,7 +193,6 @@ Astro.response.headers.set('Cache-Control', 'no-store');
             toggle.textContent = 'Trego më shumë';
             article.append(toggle);
 
-            article.append(author);
             return article;
           }),
         );
@@ -616,14 +609,6 @@ Astro.response.headers.set('Cache-Control', 'no-store');
 
   .idea-toggle[hidden] { display: none; }
   .idea-toggle:hover { text-decoration: underline; }
-
-  .idea-author {
-    display: block;
-    padding-top: 12px;
-    color: #776b65;
-    border-top: 1px solid #eee7df;
-    font-size: 13px;
-  }
 
   .notice {
     padding: 24px;
